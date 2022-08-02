@@ -3,19 +3,19 @@ namespace Hack
 {
     class Main : MonoBehaviour
     {
-        int count;
+        HackSocket socket;
         public void Start()
         {
-
+            socket = new HackSocket();
         }
         public void Update()
         {
-            count++;
+            socket.SendData("test " + Time.time);
         }
         public void OnGUI()
         {
             // Here you can call IMGUI functions of Unity to build your UI for the hack :)
-            GUI.Label(new Rect(20f, 20f, 150f, 50f), "GAME INJECTED" + count);
+            GUI.Label(new Rect(20f, 20f, 150f, 50f), "GAME INJECTED");
         }
     }
 }
