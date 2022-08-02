@@ -1,6 +1,6 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 
 namespace Hack
@@ -10,8 +10,15 @@ namespace Hack
         public Thread mThread;
         public string connectionIP = "127.0.0.1";
         public int connectionPort = 25001;
-        TcpListener listener;
-        TcpClient client;
+        public string json = "";
+        public bool connected;
+        public bool listening;
+        private TcpListener listener;
+        private TcpClient client;
+
+        // debug string for display in game if needed
+        private string _debug = "";
+        private string debug { get{return _debug;} set { _debug = _debug + value + " "; } }
 
         public HackSocket()
         {
@@ -22,24 +29,70 @@ namespace Hack
 
         private void GetInfo()
         {
-            client = new TcpClient(connectionIP, connectionPort);
+            listener = new TcpListener(IPAddress.Any, 1302);
+            listener.Start();
+            connected = true;
+            connection:
+            listening = true;
+            client = listener.AcceptTcpClient();
+            listening = false;
+            // try catch to catch when a client disconnects
+            try
+            {
+                while (connected)
+                {
+                    SendData();
+                }
+            }
+            catch
+            {
+                goto connection;
+            }
+            connected = false;
         }
 
         // Destructor to clean up thread
         ~HackSocket()
         {
-            client.Close();
             listener.Stop();
             mThread.Abort();
         }
 
+        private void SendData()
+        {
+            //---Sending Data to Host----
+            //StreamReader sr = new StreamReader(client.GetStream());
+            StreamWriter sw = new StreamWriter(client.GetStream());
+            sw.WriteLine(json);
+            sw.Flush();
+        }
+
         public void SendData(string json)
         {
-            NetworkStream newStream = client.GetStream();
+            this.json = json;
+        }
 
-            //---Sending Data to Host----
-            byte[] myWriteBuffer = Encoding.ASCII.GetBytes(json); //Converting string to byte data
-            newStream.Write(myWriteBuffer, 0, myWriteBuffer.Length); //Sending the data in Bytes to Python
+        public void Disconnect()
+        {
+            connected = false;
+        }
+
+
+        public string ConnectionStatus()
+        {
+            string extra = 
+                "side car: " + mThread.IsAlive + "\n" +
+                "Client Connected: " + !listening + "\n" +
+                "Current data: " + json;
+
+           if (connected)
+            {
+                return "TCP Status: Connected to " + connectionIP + ":" + connectionPort + "\n" + extra;
+            }
+            else
+            {
+                return "TCP Status: Not connected \n" + extra;
+            }
         }
     }
 }

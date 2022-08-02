@@ -15,7 +15,8 @@ namespace Hack
         public void OnGUI()
         {
             // Here you can call IMGUI functions of Unity to build your UI for the hack :)
-            GUI.Label(new Rect(20f, 20f, 150f, 50f), "GAME INJECTED");
+            GUI.Label(new Rect(20f, 20f, 500f, 50f), "GAME INJECTED" + Time.time);
+            GUI.Label(new Rect(20f, 40f, 500f, 200f), socket.ConnectionStatus());
         }
     }
 }
