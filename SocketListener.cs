@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Hack
 {
-    public class HackSocket
+    public class SocketListener
     {
         public Thread mThread;
         public string connectionIP = "127.0.0.1";
@@ -20,7 +20,7 @@ namespace Hack
         private string _debug = "";
         private string debug { get{return _debug;} set { _debug = _debug + value + " "; } }
 
-        public HackSocket()
+        public SocketListener()
         {
             ThreadStart ts = new ThreadStart(GetInfo);
             mThread = new Thread(ts);
@@ -52,7 +52,7 @@ namespace Hack
         }
 
         // Destructor to clean up thread
-        ~HackSocket()
+        ~SocketListener()
         {
             listener.Stop();
             mThread.Abort();

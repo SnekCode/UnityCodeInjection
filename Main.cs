@@ -3,10 +3,10 @@ namespace Hack
 {
     class Main : MonoBehaviour
     {
-        HackSocket socket;
+        SocketListener socket;
         public void Start()
         {
-            socket = new HackSocket();
+            socket = new SocketListener();
         }
         public void Update()
         {
